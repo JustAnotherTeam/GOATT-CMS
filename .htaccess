@@ -1,0 +1,19 @@
+DirectoryIndex index.php
+RewriteEngine On
+
+RewriteRule ^SMARTCSS$ SmartFiles/SmartCSS.php [L,NC]
+RewriteRule ^SMARTJS$ SmartFiles/SmartJS.php [L,NC]
+
+RewriteCond %{THE_REQUEST} /index.php [NC]
+RewriteRule ^index\.php$ /Home [L,R=302]
+
+
+# если запрос не SMARTCSS
+RewriteCond %{THE_REQUEST} !SMARTCSS [NC]
+# если запрос не SMARTJS
+RewriteCond %{THE_REQUEST} !SMARTJS [NC]
+
+RewriteCond %{THE_REQUEST} !favicon.ico [NC]
+
+# Перенаправляем на индекс
+RewriteRule .* index.php [L]
