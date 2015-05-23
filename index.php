@@ -14,5 +14,5 @@ $php_log->addMessage(date(DATE_RSS));
 foreach (array_reverse($php_log->getAllMessages()) as $message) {
     var_dump($message);
 }
-Новая строка
+Новая строка21
 ?>
