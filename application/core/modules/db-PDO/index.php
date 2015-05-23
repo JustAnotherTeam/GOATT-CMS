@@ -1,10 +1,5 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+namespace \FS;
 
 /**
  * Description of db_PDO
@@ -17,7 +12,7 @@ class db_PDO {
     protected static $moduleInfo = [
         'name' => 'db_PDO', 
         'version' => '1.0', 
-        'required modules' => [], 
+        'required modules' => [['name' => 'log', 'version' => '1.0']], 
         'require files' => []
     ];
     private static $instance = NULL;
@@ -97,27 +92,38 @@ class db_PDO {
         }
         return $stmt->fetchAll();
     }
+    
     /** Получает все переводы для всех id из массива
      * 
      * @param array $array - массив id переводимых строк
      */
     public static function getAllTranslationsOfArray(array $array) {
+        // подготовка запроса вызова хранимой процедуры
         $stmt = self::prepareCustom('CALL getAllTranslationsOfArray(:array)');
         
+        //все id в строку через запятую
         $params = implode(',', $array);
         
+        // установка параметра
         $stmt->bindParam(':array',      $params,     PDO::PARAM_STR);
         
+        // выполнение запроса
         if (!$stmt->execute()){
             self::stmtErr($stmt);
         }
         
+        
         $temp = $stmt->fetchAll();
         
         $result = [];
-        foreach ($temp as $value) {
-            $result[$value['id'].'-'.$value['language']] = ['id' => $value['id'], 'language' => $value['language'], 'translated' => $value['translated']];
+        foreach ($temp as $row) {
+            if (!isset($result[$row['id']]['translations'])){
+                $result[$row['id']]['translations'] = [];
+            }
+            array_push($result[$row['id']]['translations'], ['language' => $row['language'], 'translated' => $row['translated']]);
+            
         }
         return $result;
     }
+    
 }

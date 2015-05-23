@@ -44,4 +44,8 @@ class module_loader{
             }
         }
     }
+    public static function getModulesInfo() {
+        return self::$modules;
+        
+    }
 }
