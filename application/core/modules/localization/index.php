@@ -59,4 +59,45 @@ class localization{
     private static function addTranslationsToArrayOfColumns($array, array $columnNames){
 
     }
+    
+    public static function getAllLanguagesFromDB(database $dbObject){
+        $stmt = $dbObject::prepare('CALL getAllLanguages()');
+        
+        if (!$stmt->execute()){
+            $dbObject::stmtErr($stmt);
+        }
+        return $stmt->fetchAll();
+    }
+    /** Получает все переводы для всех id из массива
+     * 
+     * @param array $array - массив id переводимых строк
+     */
+    public static function getAllTranslationsOfArrayFromDB(database $dbObject, array $array) {
+        // подготовка запроса вызова хранимой процедуры
+        $stmt = $dbObject::prepare('CALL getAllTranslationsOfArray(:array)');
+        
+        //все id в строку через запятую
+        $params = implode(',', $array);
+        
+        // установка параметра
+        $stmt->bindParam(':array',      $params,     PDO::PARAM_STR);
+        
+        // выполнение запроса
+        if (!$stmt->execute()){
+            $dbObject::stmtErr($stmt);
+        }
+        
+        
+        $temp = $stmt->fetchAll();
+        
+        $result = [];
+        foreach ($temp as $row) {
+            if (!isset($result[$row['id']]['translations'])){
+                $result[$row['id']]['translations'] = [];
+            }
+            array_push($result[$row['id']]['translations'], ['language' => $row['language'], 'translated' => $row['translated']]);
+            
+        }
+        return $result;
+    }
 }
