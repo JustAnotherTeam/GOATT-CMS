@@ -13,7 +13,6 @@ class localization{
      *      ]
      * ] 
      */
-    
     private static $data = []; 
     
     /** обновляет статический массив $data переводами из БД на основании массива $idArray
@@ -57,7 +56,7 @@ class localization{
     }
 
     private static function addTranslationsToArrayOfColumns($array, array $columnNames){
-
+ 
     }
     
     public static function getAllLanguagesFromDB(database $dbObject){
