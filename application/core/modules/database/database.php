@@ -5,7 +5,7 @@
  *
  * @author fiftystars
  */
-class database {
+class database extends PDO{
 
     private static $instance = NULL;
     
@@ -35,13 +35,17 @@ class database {
         return self::$instance;
     }
     
-    public static function prepareCustom($statement, array $driver_options = []) {
-        $stmt = self::getInstance()->prepare($statement, $driver_options);
-        if (!$stmt){
-            self::stmtErr($stmt);
-        }
-        return $stmt;
+    public function prepare($statement, array $driver_options = []) {
+        return parent::prepare($statement, $driver_options);
     }
+    
+//    public function prepare($statement, array $driver_options = []) {
+//        $stmt = parent->prepare($statement, $driver_options);
+//        if (!$stmt){
+//            self::stmtErr($stmt);
+//        }
+//        return $stmt;
+//    }
     
     private static function stmtErr(PDOStatement $stmt){
         // TODO обработка ошибок stmt

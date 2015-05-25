@@ -7,7 +7,7 @@
  */
 
 /**
- * Ядро включает все модули, классы и информацию о классах
+ * Ядро подключает все модули, классы и информацию о классах
  *
  * @author fiftystars
  */
@@ -19,7 +19,8 @@ class core {
         module_loader::addModule('user');
         module_loader::addModule('database');
         module_loader::addModule('geo');
-        module_loader::addModule('global-parameters');
+        module_loader::addModule('localization');
+        //module_loader::addModule('global-parameters');
         module_loader::activateModules();
         self::$instance = $this;
     }
