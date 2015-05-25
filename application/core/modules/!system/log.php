@@ -1,13 +1,7 @@
 <?php
 
+
 class log{
-    use module_trait;
-    protected static $moduleInfo = [
-        'name' => 'log', 
-        'version' => '1.0', 
-        'required modules' => [], 
-        'require files' => []
-    ];
     
     protected static $rootBranch = 'logs';
     protected $logName = NULL;
