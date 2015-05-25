@@ -20,16 +20,17 @@ class localization{
      * @param array $idArray массив с id переводимых строк
      */
     private static function updateTranslations(array $idArray) {
-        $newTranslations = db_PDO::getAllTranslationsOfArray($idArray);
+        $newTranslations = self::getAllTranslationsOfArrayFromDB(database::getInstance(), $idArray);
         if (is_array($newTranslations) && count($newTranslations)){
             self::$data = array_merge(self::$data, $newTranslations);
         }
     }
-    private static function replaceIdByTranslationInArrayOfRows(array &$array, array $columnNames){
+    public static function replaceIdByTranslationInArrayOfRows(array &$array, array $columnNames){
         // получение списка id для локализации
         $arrayToTranslate = [];
-        foreach ($columnNames as $columnName) {
-            foreach ($array as $row) {
+        foreach ($array as $row) {
+            foreach ($columnNames as $columnName) {
+            
                 if (is_numeric($row[$columnName])){
                     array_push($arrayToTranslate,$row[$columnName]);
                 }
@@ -39,19 +40,20 @@ class localization{
         self::updateTranslations($arrayToTranslate);
 
         // замена id на массивы с переводами
-        foreach ($array as $row) {
+        foreach ($array as &$row) {
             foreach ($columnNames as $columnName){
-                self::replaceByTranslations($row[$columnName]);
+                self::replaceByTranslation($row[$columnName]);
             }
         }
 
     }
 
-    private static function replaceByTranslations(&$value) {
+    private static function replaceByTranslation(&$value) {
         if (isset(self::$data[$value])){
-            $value = self::$data[$value]; 
+            $value = self::$data[$value];
+//return self::$data[$value]; 
         }else{
-
+            //return NULL;
         }
     }
 
@@ -73,7 +75,7 @@ class localization{
      */
     public static function getAllTranslationsOfArrayFromDB(database $dbObject, array $array) {
         // подготовка запроса вызова хранимой процедуры
-        $stmt = $dbObject::prepare('CALL getAllTranslationsOfArray(:array)');
+        $stmt = $dbObject->prepare('CALL getAllTranslationsOfArray(:array)');
         
         //все id в строку через запятую
         $params = implode(',', $array);
@@ -91,11 +93,7 @@ class localization{
         
         $result = [];
         foreach ($temp as $row) {
-            if (!isset($result[$row['id']]['translations'])){
-                $result[$row['id']]['translations'] = [];
-            }
-            array_push($result[$row['id']]['translations'], ['language' => $row['language'], 'translated' => $row['translated']]);
-            
+            $result[$row['id']][$row['language']] = $row['translated'];
         }
         return $result;
     }
