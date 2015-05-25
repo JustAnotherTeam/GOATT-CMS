@@ -1,87 +1,11 @@
 <?php
 
-/**
- * Description of db_PDO
- *
- * @author fiftystars
- */
-class database {
+class module_database{
     use module_trait;
     
-    protected static $moduleInfo = [
-        'name' => 'db_PDO', 
-        'version' => '1.0', 
-        'required modules' => [['name' => 'log', 'version' => '1.0']], 
-        'require files' => []
+    CONST MODULE_NAME = 'database';
+    CONST MODULE_VERSION = '1.0';
+    CONST MODULE_REQUIRED_FILES = [
+        'database'
     ];
-    private static $instance = NULL;
-    
-    public function __construct() {
-        $dsn = 'mysql:dbname=main_database;host=localhost';
-        $username = 'root';
-        $password = '2O3s8a8m8a8';
-        $options = NULL;
-        
-        try{
-            parent::__construct($dsn, $username, $password, $options);
-            
-// установка тихого режима
-            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
-// установка экземпляра
-            self::$instance = $this;
-        }  catch (PDOException $e){
-            echo $e->getMessage();
-//self::dbErr($this);
-        }
-    }
-    
-    public static function getInstance(){
-        if (is_null(self::$instance)){
-            new self;
-        }
-        return self::$instance;
-    }
-    
-    public static function prepareCustom($statement, array $driver_options = []) {
-        $stmt = self::getInstance()->prepare($statement, $driver_options);
-        if (!$stmt){
-            self::stmtErr($stmt);
-        }
-        return $stmt;
-    }
-    
-    private static function stmtErr(PDOStatement $stmt){
-        // TODO обработка ошибок stmt
-        var_dump($stmt->errorInfo());
-    }
-    
-    private static function dbErr(PDO $db){
-        // TODO обработка ошибок БД
-        var_dump($db->errorInfo());
-    }
-
-    public static function authorizeUser($login, $password) {
-        $stmt = self::prepareCustom('CALL authorizeUser(:login, :password)');
-        
-        $stmt->bindParam(':login',      $login,     PDO::PARAM_STR);
-        $stmt->bindParam(':password',   $password,  PDO::PARAM_STR);
-        
-        if (!$stmt->execute()){
-            self::stmtErr($stmt);
-        }
-        return $stmt->fetchAll();
-    }
-    
-    public static function getUserPermissions($id) {
-        $stmt = self::prepareCustom('CALL getUserPermissions(:user_id)');
-        
-        $stmt->bindParam(':user_id',      $id,     PDO::PARAM_INT);
-        
-        if (!$stmt->execute()){
-            self::stmtErr($stmt);
-        }
-        return $stmt->fetchAll();
-    }
-    
-    
 }

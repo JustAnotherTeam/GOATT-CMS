@@ -25,7 +25,7 @@ class module_loader{
     
     public static function activateModules(){
         $basePath = realpath(dirname(__FILE__));
-        require_once $basePath.'/module-trait.php';
+        require_once $basePath.'/module_trait.php';
         // перебор всех добавленных модулей
         foreach (self::$modules as &$moduleInfo) {
             // получение имени файла - основной файл модуля - index.php в директории с именем модуля
@@ -35,12 +35,21 @@ class module_loader{
                 $moduleInfo['exists'] = TRUE;
                 require_once $fileName;
                 // получение имени класса
-                $className = strtolower(str_replace('-', '_', $moduleInfo['name']));
+                $className = 'module_' . strtolower(str_replace('-', '_', $moduleInfo['name']));
                 // активация модуля
                 $className::activateModule($moduleInfo);
             }else{
                 //файла не существует
                 $moduleInfo['exists'] = FALSE;
+            }
+        }
+        foreach (self::$modules as $module) {
+            if(!$module['exists']){
+                throw new Exception($message, $code, $previous);
+            }else{
+                if(!$module['activated']){
+                    echo "MODULE {$module['name']} NOT ACTIVATED!";
+                }
             }
         }
     }
