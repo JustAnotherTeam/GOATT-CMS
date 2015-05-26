@@ -8,7 +8,7 @@ trait module_trait{
         $moduleInfo['version'] = self::MODULE_VERSION;
         $moduleInfo['required files'] = self::MODULE_REQUIRED_FILES;
         $moduleInfo['activated'] = TRUE;
-        var_dump($moduleInfo); 
+ 
         // получение имени файла класса
         $reflection = new ReflectionClass('module_'.str_replace('-', '_', self::MODULE_NAME));
         // директория файла класса
