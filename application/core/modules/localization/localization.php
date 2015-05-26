@@ -6,12 +6,14 @@
 class localization{
     /**
      *
-     * @var array массив[
-     *      123 => [
-     *          ['language' => 'ru', 'translated' => 'какой то текст'] 
-     *          ['language' => 'ru', 'translated' => 'какой то текст'] 
-     *      ]
-     * ] 
+     * @var array массив[<br>
+     *      123 => [<br>
+     *          ['ru' => 'текст']<br>
+     *          ['en' => 'text']<br>
+     *      ]<br>
+     * ]
+     * 
+     * <b>ПРИМЕЧАНИЕ: </b> элемент 0 - пустая строка
      */
     private static $data = []; 
     
@@ -23,11 +25,18 @@ class localization{
         if (empty(self::$data)){
             array_push(self::$data, '');
         }
+        
         $newTranslations = self::getAllTranslationsOfArrayFromDB(database::getInstance(), $idArray);
         if (is_array($newTranslations) && count($newTranslations)){
             self::$data = array_merge(self::$data, $newTranslations);
         }
     }
+    
+    /** замещает элементы массива строк переводами
+     * 
+     * @param array $array переводимый массив
+     * @param array $columnNames массив имен колонок, содержащих id для перевода
+     */
     public static function replaceIdByTranslationInArrayOfRows(array &$array, array $columnNames){
         // получение списка id для локализации
         $arrayToTranslate = [];
@@ -50,7 +59,11 @@ class localization{
         }
 
     }
-
+    
+    /** Замещает параметр массивом переводов
+     * 
+     * @param integer $value элемент, содержащий id переводимой строки
+     */
     private static function replaceByTranslation(&$value) {
         if (isset(self::$data[$value])){
             $value = self::$data[$value];
@@ -63,6 +76,11 @@ class localization{
  
     }
     
+    /** получение всех используемых языков
+     * 
+     * @param database $dbObject объект БД
+     * @return array массив найденных языков
+     */
     public static function getAllLanguagesFromDB(database $dbObject){
         $stmt = $dbObject::prepare('CALL getAllLanguages()');
         
@@ -71,6 +89,9 @@ class localization{
         }
         return $stmt->fetchAll();
     }
+    
+    // TODO оправлять в логи не найденные id
+    
     /** Получает все переводы для всех id из массива
      * 
      * @param array $array - массив id переводимых строк
