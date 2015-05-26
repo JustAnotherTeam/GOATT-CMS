@@ -20,6 +20,9 @@ class localization{
      * @param array $idArray массив с id переводимых строк
      */
     private static function updateTranslations(array $idArray) {
+        if (empty(self::$data)){
+            array_push(self::$data, '');
+        }
         $newTranslations = self::getAllTranslationsOfArrayFromDB(database::getInstance(), $idArray);
         if (is_array($newTranslations) && count($newTranslations)){
             self::$data = array_merge(self::$data, $newTranslations);
@@ -51,9 +54,8 @@ class localization{
     private static function replaceByTranslation(&$value) {
         if (isset(self::$data[$value])){
             $value = self::$data[$value];
-//return self::$data[$value]; 
         }else{
-            //return NULL;
+            $value = NULL;
         }
     }
 
@@ -87,8 +89,7 @@ class localization{
         if (!$stmt->execute()){
             $dbObject::stmtErr($stmt);
         }
-        
-        
+        // 
         $temp = $stmt->fetchAll();
         
         $result = [];

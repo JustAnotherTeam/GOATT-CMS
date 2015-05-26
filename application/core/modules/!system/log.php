@@ -40,6 +40,11 @@ class log{
     }
     
     public function addMessage($message){
+        if (!is_array($message)){
+            $message = [$message];
+        }
+        $message['timestamp'] = time();
+        
         array_push($this->log, $message);
     }
     public function getAllMessages(){
