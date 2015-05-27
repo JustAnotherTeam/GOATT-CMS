@@ -1,4 +1,7 @@
 <?php
+/**
+ * @author FiftyStars <fiftystarsdj@gmail.com>
+ */
 ini_set('display_errors', 1);
 session_start();
 require_once 'application/core/core.php';
@@ -9,7 +12,7 @@ try{
     new core();
 
     //logTest();
-    localizationTest();
+    //localizationTest();
     
 } catch (Exception $exception){
     exception_handler::handleException($exception);
@@ -22,11 +25,7 @@ try{
 //*************************************************************************************************************
 //*************************************************************************************************************
 //*************************************************************************************************************
-/**
- * 
- * @global type $core_log
- * @source 2 3 description
- */
+
 function logTest(){
     // log test
         global $core_log;

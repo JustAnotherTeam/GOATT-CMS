@@ -15,12 +15,14 @@ class core {
     private static $instance = NULL;
     
     public function __construct() {
+        
         require_once 'application/core/modules/module_loader.php';
         module_loader::addModule('user');
         module_loader::addModule('database');
         module_loader::addModule('geo');
         module_loader::addModule('localization');
-        //module_loader::addModule('global-parameters');
+        module_loader::addModule('global-parameters');
+        
         module_loader::activateModules();
         self::$instance = $this;
     }
