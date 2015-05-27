@@ -1,4 +1,7 @@
 <?php
+/**
+ * @filesource
+ */
 ini_set('display_errors', 1);
 session_start();
 require_once 'application/core/core.php';
@@ -9,7 +12,7 @@ try{
     new core();
 
     //logTest();
-    localizationTest();
+    //localizationTest();
     
 } catch (Exception $exception){
     exception_handler::handleException($exception);
