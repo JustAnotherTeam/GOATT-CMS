@@ -1,0 +1,33 @@
+<?php
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of controller
+ *
+ * @author fiftystars
+ */
+class mvc_controller {
+    use version_trait;
+    
+    CONST VERSION = '1.0';
+    
+    protected 
+            $baseName = NULL,
+            $model = NULL,
+            $viewName   = NULL;
+    
+    
+    public function __construct($name) {
+        
+        $this->baseName = $name;
+        
+        $this->modelName    = new class_file_info($name, 1);
+        $this->viewName     = new class_file_info($name, 2);
+        
+    }
+}

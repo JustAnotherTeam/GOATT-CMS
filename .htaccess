@@ -1,4 +1,5 @@
-DirectoryIndex index.php
+DirectoryIndex index.php index.html
+
 RewriteEngine On
 
 RewriteRule ^SMARTCSS$ SmartFiles/SmartCSS.php [L,NC]
