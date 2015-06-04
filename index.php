@@ -5,14 +5,15 @@
 ini_set('display_errors', 1);
 session_start();
 require_once 'application/core/core.php';
-require_once 'application/core/modules/!system/log.php';
-require_once 'application/core/modules/!system/exception_handler.php';
+new GOATT\core();
+//new ;
 try{
+    unset($_SESSION['logs']);
     $core_log = new log('core-log');
-    new core();
-
-    //logTest();
+    
     //localizationTest();
+    logTest();
+    //new core();
     
 } catch (Exception $exception){
     exception_handler::handleException($exception);
@@ -28,13 +29,14 @@ try{
 
 function logTest(){
     // log test
-        global $core_log;
+    global $core_log;
     $core_log->addMessage(date(DATE_RSS));
     $messages = array_reverse($core_log->getAllMessages());
-    header('Content-type: text/plain');
-    foreach ($messages as $value) {
-        echo "$value\n";
-    }
+//    header('Content-type: text/plain');
+//    foreach ($messages as $value) {
+//        echo "$value\n";
+//    }
+    var_dump($messages);
 }
 
 function localizationTest(){

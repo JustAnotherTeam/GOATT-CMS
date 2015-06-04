@@ -1,4 +1,4 @@
-<?php
+<?php namespace GOATT;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -7,7 +7,7 @@
  */
 
 /**
- * Ядро подключает все модули, классы и информацию о классах
+ * Ядро создает автолоадеры
  *
  * @author fiftystars
  */
@@ -16,14 +16,28 @@ class core {
     
     public function __construct() {
         
-        require_once 'application/core/modules/module_loader.php';
-        module_loader::addModule('user');
-        module_loader::addModule('database');
-        module_loader::addModule('geo');
-        module_loader::addModule('localization');
-        module_loader::addModule('global-parameters');
+        //автолоадер для классов
+        spl_autoload_register(function($className){
+            $fileName = "application/core/classes/{$className}.php";
+            if (file_exists($fileName)){
+                require_once $fileName;
+            }
+        });
+        // автолоадер для трейтов
+        spl_autoload_register(function($traitName){
+            $fileName = "application/core/traits/{$traitName}.php";
+            if (file_exists($fileName)){
+                require_once $fileName;
+            }
+        });
+        // автолоадер для интерфейсов
+        spl_autoload_register(function($interfaceName){
+            $fileName = "application/core/interfaces/{$interfaceName}.php";
+            if (file_exists($fileName)){
+                require_once $fileName;
+            }
+        });
         
-        module_loader::activateModules();
         self::$instance = $this;
     }
     
