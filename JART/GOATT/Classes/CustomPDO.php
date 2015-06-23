@@ -1,40 +1,39 @@
 <?php
 
-namespace \GOATT;
+namespace JART\GOATT\Classes;
 
 /**
  * Расширенный класс PDO. Использует паттерн синглтон.
  *
  * @author fiftystars
  */
-class database
-        extends PDO{
+class CustomPDO extends \PDO
+{
 
-    use version_trait;
+    use \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait;
 
     CONST VERSION = '1.0';
 
-    private static $instance = NULL;
-    private static $dsn      = NULL;
-    private static $username = NULL;
-    private static $password = NULL;
-    private static $options  = NULL;
+    private static $instance = null;
+    private static $dsn      = null;
+    private static $username = null;
+    private static $password = null;
+    private static $options  = null;
 
     /**
-     * функция приватна для исключения использования вне синглтона
+     * 
      */
-    private function __construct(){
+    public function __construct()
+    {
         try{
-            parent::__construct(self::$dsn,
-                                self::$username,
-                                self::$password,
-                                self::$options);
+            parent::__construct(self::$dsn, self::$username, self::$password,
+                self::$options);
             // установка тихого режима
-            $this->setAttribute(PDO::ATTR_ERRMODE,
-                                PDO::ERRMODE_SILENT);
+            $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
             // установка экземпляра
             self::$instance = $this;
-        }catch (PDOException $e){
+        }catch (\PDOException $e){
             // TODO exception?
         }
     }
@@ -46,10 +45,12 @@ class database
      * @param type $password пароль пользователя
      * @param type $options дополнительные параметры подключения
      */
-    public static function setConnectionParameters($dsn,
-                                                   $username,
-                                                   $password,
-                                                   $options = NULL){
+    public static function setConnectionParameters(
+        $dsn, 
+        $username, 
+        $password,
+        $options = null)
+    {
         self::$dsn      = $dsn;
         self::$username = $username;
         self::$password = $password;
@@ -58,13 +59,14 @@ class database
 
     /** Возвращает подключение к БД(если подключение не удалось или не указаны данные подключения)
      * 
-     * @return PDO||NULL
+     * @return PDO||null
      */
-    public static function getInstance(){
+    public static function getInstance()
+    {
         if (is_null(self::$instance)){
-            // если не указаны параметры подключения, то NULL
+            // если не указаны параметры подключения, то null
             if (is_null(self::$dsn) || is_null(self::$username) || is_null(self::$password)){
-                return NULL;
+                return null;
             }else{
                 new self;
             }

@@ -1,13 +1,15 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Classes;
 
 /** класс отвечающий за получение текстов на определенном языке
  * 
  */
-class localization{
+class Localization
+{
 
-    use version_trait;
+    use \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait;
 
     CONST VERSION = '1.0';
 
@@ -28,17 +30,16 @@ class localization{
      * 
      * @param array $idArray массив с id переводимых строк
      */
-    private static function updateTranslations(array $idArray){
+    private static function updateTranslations(array $idArray)
+    {
         if (empty(self::$data)){
-            array_push(self::$data,
-                       '');
+            array_push(self::$data, '');
         }
 
         $newTranslations = self::getAllTranslationsOfArrayFromDB(database::getInstance(),
-                                                                 $idArray);
+                $idArray);
         if (is_array($newTranslations) && count($newTranslations)){
-            self::$data = array_merge(self::$data,
-                                      $newTranslations);
+            self::$data = array_merge(self::$data, $newTranslations);
         }
     }
 
@@ -48,15 +49,15 @@ class localization{
      * @param array $columnNames массив имен колонок, содержащих id для перевода
      */
     public static function replaceIdByTranslationInArrayOfRows(array &$array,
-                                                               array $columnNames){
+        array $columnNames)
+    {
         // получение списка id для локализации
         $arrayToTranslate = [];
         foreach ($array as $row){
             foreach ($columnNames as $columnName){
 
                 if (is_numeric($row[$columnName])){
-                    array_push($arrayToTranslate,
-                               $row[$columnName]);
+                    array_push($arrayToTranslate, $row[$columnName]);
                 }
             }
         }
@@ -75,16 +76,18 @@ class localization{
      * 
      * @param integer $value элемент, содержащий id переводимой строки
      */
-    private static function replaceByTranslation(&$value){
+    private static function replaceByTranslation(&$value)
+    {
         if (isset(self::$data[$value])){
             $value = self::$data[$value];
         }else{
-            $value = NULL;
+            $value = null;
         }
     }
 
     private static function addTranslationsToArrayOfColumns($array,
-                                                            array $columnNames){
+        array $columnNames)
+    {
         
     }
 
@@ -93,7 +96,8 @@ class localization{
      * @param database $dbObject объект БД
      * @return array массив найденных языков
      */
-    public static function getAllLanguagesFromDB(database $dbObject){
+    public static function getAllLanguagesFromDB(database $dbObject)
+    {
         $stmt = $dbObject::prepare('CALL getAllLanguages()');
 
         if (!$stmt->execute()){
@@ -109,18 +113,16 @@ class localization{
      * @param array $array - массив id переводимых строк
      */
     public static function getAllTranslationsOfArrayFromDB(database $dbObject,
-                                                           array $array){
+        array $array)
+    {
         // подготовка запроса вызова хранимой процедуры
         $stmt = $dbObject->prepare('CALL getAllTranslationsOfArray(:array)');
 
         //все id в строку через запятую
-        $params = implode(',',
-                          $array);
+        $params = implode(',', $array);
 
         // установка параметра
-        $stmt->bindParam(':array',
-                         $params,
-                         PDO::PARAM_STR);
+        $stmt->bindParam(':array', $params, PDO::PARAM_STR);
 
         // выполнение запроса
         if (!$stmt->execute()){

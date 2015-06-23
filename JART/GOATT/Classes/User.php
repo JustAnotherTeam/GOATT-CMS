@@ -1,6 +1,6 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Classes;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,38 +13,43 @@ namespace GOATT;
  *
  * @author fiftystars
  */
-class user{
+class User
+{
 
-    use version_trait;
+    use \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait;
 
     CONST VERSION = '1.0';
 
-    private static $current = NULL;
+    private static $current = null;
     private static $users   = [];
-    private $id          = NULL;
-    private $firstName   = NULL;
-    private $middleName  = NULL;
-    private $lastName    = NULL;
-    private $birthDate   = NULL;
-    private $lastOnline  = NULL;
-    private $birthCity   = NULL;
-    private $currentCity = NULL;
+    private $id             = null;
+    private $firstName      = null;
+    private $middleName     = null;
+    private $lastName       = null;
+    private $birthDate      = null;
+    private $lastOnline     = null;
+    private $birthCity      = null;
+    private $currentCity    = null;
 
-    public static function setCurrentUser(user $user){
+    public static function setCurrentUser(user $user)
+    {
         self::$currentUser = $user;
     }
 
-    public static function getCurrentUser(){
+    public static function getCurrentUser()
+    {
         return self::$currentUser;
     }
 
-    public static function getUser(){
+    public static function getUser()
+    {
         $newUser = new user(id);
-        array_push(self::$users,
-                   $newUser);
+        array_push(self::$users, $newUser);
     }
 
-    public static function createUsersByIdArray(array $idArray){
+    public static function createUsersByIdArray(array $idArray)
+    {
         // создание пользователей по списку ID
         $usersInfo = self::getInfoByIDList($idArray);
         foreach ($usersInfo as $userInfo){
@@ -58,11 +63,13 @@ class user{
         }
     }
 
-    public static function getInfoByIDList(array $idArray){
+    public static function getInfoByIDList(array $idArray)
+    {
         // получение данных о полььзователях по списку ID 
     }
 
-    public function __construct(){
+    public function __construct()
+    {
         ;
     }
 

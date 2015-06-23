@@ -1,6 +1,6 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Classes;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,15 +13,16 @@ namespace GOATT;
  *
  * @author fiftystars
  */
-class mvc_view{
+class MVCView
+{
 
-    use version_trait;
+    use \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait;
 
     CONST VERSION = '1.0';
 
-    public static function generate($view,
-                                    $templateView = NULL,
-                                    $data = NULL){
+    public static function generate($view, $templateView = null, $data = null)
+    {
         if (is_null($templateView)){
             include $view;
         }else{

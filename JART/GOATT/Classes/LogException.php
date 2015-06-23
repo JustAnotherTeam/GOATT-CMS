@@ -1,6 +1,6 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Classes;
 
 // TODO Написать обработчик сессии чтобы при закрытии сессии лог сохранялся в БД.
 /**
@@ -8,10 +8,11 @@ namespace GOATT;
  *
  * @author fiftystars
  */
-class log_exception
-        extends log{
+class LogException extends Log
+{
 
-    use version_trait;
+    use \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait;
 
     CONST VERSION = '1.0';
 
@@ -19,7 +20,8 @@ class log_exception
      * 
      * @param Exception $exception исключение
      */
-    public function addMessage(Exception $exception){
+    public function addMessage(Exception $exception)
+    {
         $message['URI']     = $_SERVER['REQUEST_URI'];
         $message['code']    = $exception->getCode();
         $message['file']    = $exception->getFile();

@@ -1,6 +1,6 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Classes;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,21 +13,23 @@ namespace GOATT;
  *
  * @author fiftystars
  */
-class mvc_model{
+class MVCModel
+{
 
-    use version_trait,
-        dependency_trait;
+    use \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait;
 
     CONST VERSION         = '1.0';
     CONST DEPENDENCY_LIST = [];
 
-    protected $data = NULL;
+    protected $data = null;
 
     /**
      * Получает данные модели(повторное получение данных - из кэша)
      * @return mixed 
      */
-    final public function getData(){
+    final public function getData()
+    {
         if (is_null($data)){
             $this->data = $this->calculateData();
         }else{
@@ -38,14 +40,16 @@ class mvc_model{
     /**
      * расширяемая функция расчета данных. Должна возвращать результат
      */
-    public function calculateData(){
+    public function calculateData()
+    {
         
     }
 
     /**
      * Перерасчет данных. Не переопределяется
      */
-    final public function recalculateData(){
+    final public function recalculateData()
+    {
         $this->data = $this->calculateData();
     }
 

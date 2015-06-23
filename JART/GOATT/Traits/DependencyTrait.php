@@ -1,6 +1,6 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Traits;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -11,9 +11,11 @@ namespace GOATT;
 /**
  * Трейт получения зависимостей класса от других классов
  */
-trait dependency_trait{
+trait DependencyTrait
+{
 
-    function getDependencies(){
+    function getDependencies()
+    {
         return self::DEPENDENCY_LIST;
     }
 

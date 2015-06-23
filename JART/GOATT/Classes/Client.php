@@ -1,6 +1,6 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Classes;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,9 +13,11 @@ namespace GOATT;
  *
  * @author fiftystars
  */
-class client{
+class Client
+{
 
-    use version_trait;
+    use \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait;
 
     CONST VERSION = '1.0';
 

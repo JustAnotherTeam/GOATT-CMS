@@ -1,20 +1,21 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Traits;
 
-trait version_trait{
+trait VersionTrait
+{
 
-    public static function activateModule(&$moduleInfo){
+    public static function activateModule(&$moduleInfo)
+    {
         // заполнение информации о модуле
         $moduleInfo['name']           = self::MODULE_NAME;
         $moduleInfo['version']        = self::MODULE_VERSION;
         $moduleInfo['required files'] = self::MODULE_REQUIRED_FILES;
-        $moduleInfo['activated']      = TRUE;
+        $moduleInfo['activated']      = true;
 
         // получение имени файла класса
-        $reflection = new ReflectionClass('module_' . str_replace('-',
-                                                                  '_',
-                                                                  self::MODULE_NAME));
+        $reflection = new ReflectionClass('module_' . str_replace('-', '_',
+                self::MODULE_NAME));
         // директория файла класса
         $basePath   = realpath(dirname($reflection->getFileName()));
         // подключение файлов

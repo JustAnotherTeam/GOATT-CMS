@@ -1,6 +1,6 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Classes;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,12 +13,16 @@ namespace GOATT;
  *
  * @author fiftystars
  */
-class router{
+class Router
+{
 
-    public static function start(){
-        self::breakURI();
+    use \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait;
 
-        new mvc('home');
+    public static function start()
+    {
+        GlobalParameters::initGlobalParameters();
+        new MVC('Home');
     }
 
 }

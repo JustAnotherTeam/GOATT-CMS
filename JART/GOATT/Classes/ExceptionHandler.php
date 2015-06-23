@@ -1,6 +1,6 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Classes;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,9 +13,11 @@ namespace GOATT;
  *
  * @author fiftystars
  */
-class exception_handler{
+class ExceptionHandler
+{
 
-    use version_trait;
+    use \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait;
 
     CONST VERSION = '1.0';
 
@@ -23,7 +25,8 @@ class exception_handler{
      * 
      * @param Exception $exception обрабатываемое исключение
      */
-    public static function handleException(Exception $exception){
+    public static function handleException(\Exception $exception)
+    {
         echo "CODE: {$exception->getCode()} \n FILE: {$exception->getFile()} \n LINE: {$exception->getLine()} \n MESSAGE: {$exception->getMessage()} \n ";
     }
 

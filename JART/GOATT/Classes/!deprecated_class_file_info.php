@@ -12,12 +12,12 @@
  * @author fiftystars
  */
 final class class_file_info {
-    private $name = NULL,
-            $fileName = NULL,
-            $className = NULL,
+    private $name = null,
+            $fileName = null,
+            $className = null,
             $type = 0;
     
-    public function __construct($name = NULL, $type = 0) {
+    public function __construct($name = null, $type = 0) {
         $this->name = $name;
         $this->type = $type;
     }

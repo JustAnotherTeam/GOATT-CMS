@@ -1,6 +1,6 @@
 <?php
 
-namespace GOATT;
+namespace JART\GOATT\Classes;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,15 +13,20 @@ namespace GOATT;
  *
  * @author fiftystars
  */
-class database_query_handler{
+class DatabaseQueryLibrary
+{
 
-    private static $database = NULL;
+    use \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait;
+
+    private static $database = null;
 
     /** устанавливает БД, к которой будут производиться запросы
      * 
      * @param PDO $database БД
      */
-    public static function setDatabase(PDO $database){
+    public static function setDatabase(\PDO $database)
+    {
         self::$database = $database;
     }
 
@@ -31,20 +36,16 @@ class database_query_handler{
      * @param type $password пароль пользователя
      * @return array ассоциативный массив с параметрами пользователя
      */
-    public static function authorizeUser($login,
-                                         $password){
+    public static function authorizeUser($login, $password)
+    {
         $query = 'CALL authorizeUser(:login, :password)';
         $stmt  = self::$db->prepare($query);
         // привязка параметров
-        $stmt->bindParam(':login',
-                         $login,
-                         PDO::PARAM_STR);
-        $stmt->bindParam(':password',
-                         $password,
-                         PDO::PARAM_STR);
+        $stmt->bindParam(':login', $login, \PDO::PARAM_STR);
+        $stmt->bindParam(':password', $password, \PDO::PARAM_STR);
 
         if (!$stmt->execute()){
-            self::stmtErr($stmt);
+            $database->stmtErr($stmt);
         }
         return $stmt->fetchAll();
     }
@@ -54,14 +55,13 @@ class database_query_handler{
      * @param integer $id ИД пользователя
      * @return array массив с правами пользователя
      */
-    public static function getUserPermissions($id){
+    public static function getUserPermissions($id)
+    {
         $query = 'CALL getUserPermissions(:user_id)';
         $stmt  = self::$db->prepare($query);
 
         // привязка параметров
-        $stmt->bindParam(':user_id',
-                         $id,
-                         PDO::PARAM_INT);
+        $stmt->bindParam(':user_id', $id, PDO::PARAM_INT);
 
         // выполнение запроса
         if (!$stmt->execute()){
@@ -74,13 +74,14 @@ class database_query_handler{
      * 
      * @return array Массив с языками
      */
-    public static function getAllLanguagesOfWebsite(){
+    public static function getAllLanguagesOfWebsite()
+    {
         $query = 'CALL getAllLanguagesOfWebsite()';
-        $stmt  = self::$db->prepare($query);
+        $stmt  = self::$database->prepare($query);
 
         // выполнение запроса
         if (!$stmt->execute()){
-            self::stmtErr($stmt);
+            $database->stmtErr($stmt);
         }
         return $stmt->fetchAll();
     }
