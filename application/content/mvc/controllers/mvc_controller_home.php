@@ -11,9 +11,14 @@
  *
  * @author fiftystars
  */
-class controller_home extends mvc_controller{
-    public function __construct($name) {
-        
-        parent::__construct($name);
+class mvc_controller_home
+        extends mvc_controller{
+
+    public function __construct(){
+        $this->baseName  = 'home';
+        $this->modelName = 'home';
+        $this->viewName  = 'home';
+        parent::__construct();
     }
+
 }

@@ -1,86 +1,75 @@
-<?php namespace \GOATT;
+<?php
+
+namespace \GOATT;
 
 /**
- * Description of db_PDO
+ * Расширенный класс PDO. Использует паттерн синглтон.
  *
  * @author fiftystars
  */
-class database extends PDO{
+class database
+        extends PDO{
+
     use version_trait;
+
     CONST VERSION = '1.0';
-    
+
     private static $instance = NULL;
-    
-    public function __construct() {
-        $dsn = 'mysql:dbname=main_database;host=localhost';
-        $username = 'root';
-        $password = '2O3s8a8m8a8';
-        $options = NULL;
-        
+    private static $dsn      = NULL;
+    private static $username = NULL;
+    private static $password = NULL;
+    private static $options  = NULL;
+
+    /**
+     * функция приватна для исключения использования вне синглтона
+     */
+    private function __construct(){
         try{
-            parent::__construct($dsn, $username, $password, $options);
-            
-// установка тихого режима
-            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
-// установка экземпляра
+            parent::__construct(self::$dsn,
+                                self::$username,
+                                self::$password,
+                                self::$options);
+            // установка тихого режима
+            $this->setAttribute(PDO::ATTR_ERRMODE,
+                                PDO::ERRMODE_SILENT);
+            // установка экземпляра
             self::$instance = $this;
-        }  catch (PDOException $e){
-            echo $e->getMessage();
-//self::dbErr($this);
+        }catch (PDOException $e){
+            // TODO exception?
         }
     }
-    
+
+    /** Устанавливает параметры подключения к БД
+     * 
+     * @param type $dsn строка подключения к БД
+     * @param type $username Имя пользователя
+     * @param type $password пароль пользователя
+     * @param type $options дополнительные параметры подключения
+     */
+    public static function setConnectionParameters($dsn,
+                                                   $username,
+                                                   $password,
+                                                   $options = NULL){
+        self::$dsn      = $dsn;
+        self::$username = $username;
+        self::$password = $password;
+        self::$options  = $options;
+    }
+
+    /** Возвращает подключение к БД(если подключение не удалось или не указаны данные подключения)
+     * 
+     * @return PDO||NULL
+     */
     public static function getInstance(){
         if (is_null(self::$instance)){
-            new self;
+            // если не указаны параметры подключения, то NULL
+            if (is_null(self::$dsn) || is_null(self::$username) || is_null(self::$password)){
+                return NULL;
+            }else{
+                new self;
+            }
         }
         return self::$instance;
     }
-    
-    public function prepare($statement, array $driver_options = []) {
-        return parent::prepare($statement, $driver_options);
-    }
-    
-//    public function prepare($statement, array $driver_options = []) {
-//        $stmt = parent->prepare($statement, $driver_options);
-//        if (!$stmt){
-//            self::stmtErr($stmt);
-//        }
-//        return $stmt;
-//    }
-    
-    private static function stmtErr(PDOStatement $stmt){
-        // TODO обработка ошибок stmt
-        var_dump($stmt->errorInfo());
-    }
-    
-    private static function dbErr(PDO $db){
-        // TODO обработка ошибок БД
-        var_dump($db->errorInfo());
-    }
 
-    public static function authorizeUser($login, $password) {
-        $stmt = self::prepareCustom('CALL authorizeUser(:login, :password)');
-        
-        $stmt->bindParam(':login',      $login,     PDO::PARAM_STR);
-        $stmt->bindParam(':password',   $password,  PDO::PARAM_STR);
-        
-        if (!$stmt->execute()){
-            self::stmtErr($stmt);
-        }
-        return $stmt->fetchAll();
-    }
-    
-    public static function getUserPermissions($id) {
-        $stmt = self::prepareCustom('CALL getUserPermissions(:user_id)');
-        
-        $stmt->bindParam(':user_id',      $id,     PDO::PARAM_INT);
-        
-        if (!$stmt->execute()){
-            self::stmtErr($stmt);
-        }
-        return $stmt->fetchAll();
-    }
-    
-    
 }

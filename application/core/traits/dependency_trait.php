@@ -9,14 +9,12 @@ namespace GOATT;
  */
 
 /**
- * Description of client
- *
- * @author fiftystars
+ * Трейт получения зависимостей класса от других классов
  */
-class client{
+trait dependency_trait{
 
-    use version_trait;
-
-    CONST VERSION = '1.0';
+    function getDependencies(){
+        return self::DEPENDENCY_LIST;
+    }
 
 }
