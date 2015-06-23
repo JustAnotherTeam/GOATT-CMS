@@ -11,9 +11,12 @@
  *
  * @author fiftystars
  */
-class model_home extends mvc_model{
-    public function getData() {
-        
+class mvc_model_home
+        extends mvc_model{
+
+    public function getData(){
+
         parent::getData();
     }
+
 }

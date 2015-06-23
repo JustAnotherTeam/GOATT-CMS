@@ -9,14 +9,16 @@ namespace GOATT;
  */
 
 /**
- * Description of client
+ * Description of router
  *
  * @author fiftystars
  */
-class client{
+class router{
 
-    use version_trait;
+    public static function start(){
+        self::breakURI();
 
-    CONST VERSION = '1.0';
+        new mvc('home');
+    }
 
 }
