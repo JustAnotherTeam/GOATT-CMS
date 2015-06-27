@@ -25,7 +25,7 @@ class DatabaseQueryLibrary
      * 
      * @param PDO $database БД
      */
-    public static function setDatabase(\PDO $database)
+    public static function setDatabase(\JART\GOATT\Classes\CustomPDO $database)
     {
         self::$database = $database;
     }
@@ -45,7 +45,8 @@ class DatabaseQueryLibrary
         $stmt->bindParam(':password', $password, \PDO::PARAM_STR);
 
         if (!$stmt->execute()){
-            $database->stmtErr($stmt);
+            $className = get_class(self::$database);
+            $className::stmtError($stmt);
         }
         return $stmt->fetchAll();
     }
@@ -61,29 +62,34 @@ class DatabaseQueryLibrary
         $stmt  = self::$db->prepare($query);
 
         // привязка параметров
-        $stmt->bindParam(':user_id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':user_id', $id, \PDO::PARAM_INT);
 
         // выполнение запроса
         if (!$stmt->execute()){
-            self::stmtErr($stmt);
+            $className = get_class(self::$database);
+            $className::stmtError($stmt);
+        }else{
+            return (array)$stmt->fetchAll();
         }
-        return (array)$stmt->fetchAll();
     }
 
-    /** Возвращает массив с языками сайта
+    /** Возвращает массив с языками
      * 
      * @return array Массив с языками
      */
-    public static function getAllLanguagesOfWebsite()
+    public static function getAllLanguages()
     {
-        $query = 'CALL getAllLanguagesOfWebsite()';
+        $query = 'CALL getAllLanguages()';
         $stmt  = self::$database->prepare($query);
 
         // выполнение запроса
         if (!$stmt->execute()){
-            $database->stmtErr($stmt);
+            $className = get_class(self::$database);
+            $className::stmtError($stmt);
+            return NULL;
+        }else{
+            return (array)$stmt->fetchAll();
         }
-        return $stmt->fetchAll();
     }
 
 }

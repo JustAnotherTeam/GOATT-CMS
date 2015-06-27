@@ -15,7 +15,6 @@ namespace JART\GOATT\Core;
  */
 class Core
 {
-
     /** @var core синглтон экземпляр объекта */
     private static $instance = null;
 
@@ -67,6 +66,6 @@ function autoloader($fullClassName)
         $fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
     }
     $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-    echo $fileName.'<br>';
+    echo 'AUTOLOAD: ' . $fileName.'<br>';
     require $fileName;
 }

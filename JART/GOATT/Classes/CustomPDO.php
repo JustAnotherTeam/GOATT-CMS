@@ -11,11 +11,14 @@ class CustomPDO extends \PDO
 {
 
     use \JART\GOATT\Traits\VersionTrait,
-        \JART\GOATT\Traits\DependencyTrait;
+        \JART\GOATT\Traits\DependencyTrait, 
+        \JART\GOATT\Traits\Singleton;
 
     CONST VERSION = '1.0';
-
-    private static $instance = null;
+    
+    // DEPRECATED
+    //private static $instance = null;
+    
     private static $dsn      = null;
     private static $username = null;
     private static $password = null;
@@ -46,10 +49,7 @@ class CustomPDO extends \PDO
      * @param type $options дополнительные параметры подключения
      */
     public static function setConnectionParameters(
-        $dsn, 
-        $username, 
-        $password,
-        $options = null)
+    $dsn, $username, $password, $options = null)
     {
         self::$dsn      = $dsn;
         self::$username = $username;
@@ -72,6 +72,17 @@ class CustomPDO extends \PDO
             }
         }
         return self::$instance;
+    }
+
+    /** Обработка ошибок запросов
+     * 
+     * @param \PDOStatement $stmt
+     */
+    public static function stmtError(\PDOStatement $stmt)
+    {
+        echo $stmt->errorCode() . '<br>';
+        var_dump($stmt->errorInfo());
+        echo '<br>';
     }
 
 }

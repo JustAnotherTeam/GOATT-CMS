@@ -13,7 +13,7 @@ namespace JART\GOATT\Classes;
  *
  * @author fiftystars
  */
-class User
+class User implements \JART\GOATT\Interfaces\CacheableInSession
 {
 
     use \JART\GOATT\Traits\VersionTrait,
@@ -34,17 +34,17 @@ class User
 
     public static function setCurrentUser(user $user)
     {
-        self::$currentUser = $user;
+        self::$current = $user;
     }
 
     public static function getCurrentUser()
     {
-        return self::$currentUser;
+        return self::$current;
     }
 
     public static function getUser()
     {
-        $newUser = new user(id);
+        $newUser = new user();
         array_push(self::$users, $newUser);
     }
 
@@ -72,5 +72,13 @@ class User
     {
         ;
     }
-
+    
+    public function saveToSessionCache()
+    {
+        ;
+    }
+    public function loadFromSessionCache()
+    {
+        ;
+    }
 }
