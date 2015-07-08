@@ -8,167 +8,77 @@ namespace JART\GOATT\Classes;
  * and open the template in the editor.
  */
 
-/**
- * класс для работы с языками
- *
- * @author fiftystars
- */
-class Language
+abstract class Language
 {
 
-    use \JART\GOATT\Traits\VersionTrait,
-        \JART\GOATT\Traits\DependencyTrait;
+    use \JART\GOATT\Traits\Multiton,
+        \JART\GOATT\Traits\VersionTrait,
+        \JART\GOATT\Traits\DependencyTrait,
+        \JART\GOATT\Traits\SessionCacheTrait;
 
-    private $abbr;
-    private $fullname;
-    private static $languages        = []; // [['abbr'=>'ru', 'fullname'=>'russian']]
-    private static $languagesUpdated = false;
-    public static $instances         = [];
+    /** @var string аббревиатура языка */
+    private $abbreviation                      = null;
+    /** @var string полное имя языка */
+    private $fullName                          = null;
+    /** @var bool признак использования как родного языка вебсайта */
+    private $websiteNativeLanguage             = false;
+    /** @var bool признак использования в URI */
+    private $usedInURI                         = false;
+    /** @var bool язык используется для локализации */
+    private $usedInLocalization                = false;
+    /** @var bool статус инициализации языков */
+    private static $initialized                = false;
 
-    /** Валидная аббревиатура языка?
-     * 
-     * @param string $string строка
-     * @return boolean результат
+    /** Инициализация экземпляров
      */
-    public static function isValidAbbr($string)
+    private static function initAllInstances()
     {
-        foreach (self::$languages as $language){
-            if ($language['abbr'] == $string){
-                return true;
-            }
-        }
-        return false;
-    }
+        $languages = DatabaseQueryLibrary::getAllLanguages();
 
-    /** Валидное полное имя языка?
-     * 
-     * @param string $string строка
-     * @return boolean результат
-     */
-    public static function isValidFullname($string)
-    {
-        foreach (self::$languages as $language){
-            if ($language['fullname'] == $string){
-                return true;
-            }
-        }
-        return false;
-    }
+        foreach ($languages as $language){
+            // создание экземпляра
+            $instance = new self($language);
 
-    /** Возвращает аббревиатуру языка по полному имени
-     * 
-     * @param string $fullname полное имя языка
-     * @return string|null аббревиатура языка или null если полное имя не найдено
-     */
-    public static function findAbbrByFullname($fullname)
-    {
-        foreach (self::$languages as $language){
-            if ($language['fullname'] == $fullname){
-                return $language['abbr'];
-            }
-        }
-        return null;
-    }
-
-    /** Возвращает полное имя языка по аббревиатуре
-     * 
-     * @param string $abbr аббревиатура языка
-     * @return string|null полное имя языка или null если аббревиатура не найдена
-     */
-    public static function findFullnameByAbbr($abbr)
-    {
-        foreach (self::$languages as $language){
-            if ($language['abbr'] == $abbr){
-                return $language['fullname'];
-            }
-        }
-        return null;
-    }
-
-    /** Возвращает объект, представляющий язык(на каждый язык не более одного экземпляра класса)
-     * 
-     * @param string $language
-     * @return language объект, представляющий язык
-     */
-    public static function getInstance($language)
-    {
-        // если нет такого языка в экземплярах, то создаем новый
-        if (!isset(self::$instances[$language])){
-            $new = new self($language);
-            // если не удалось 
-            if (is_null($new)){
-                return null;
-            }else{
-                self::$instances[$new->getAbbr()]     = $new;
-                self::$instances[$new->getFullname()] = $new;
-            }
+            // запись ссылок в массив всех экземпляров
+            self::$instances[] = &$instance;
         }
 
-        return self::$instances[$language];
+        self::$initialized = true;
     }
 
-    /**
-     * обновление списка языков(получение из БД
-     */
-    public static function updateLanguagesList()
+    private function __construct($langArray)
     {
-        self::$languages = DatabaseQueryLibrary::getAllLanguagesOfWebsite();
-    }
-
-    /**
-     * 
-     * @param string $abbrOrFull аббревиатура языка или полное имя
-     * @return language|null null возвращается если строка $abbrOrFull не найдена в списке языков
-     */
-    private function __construct($abbrOrFull)
-    {
-        // если список языков не обновлен, то обновляем
-        if (!self::$languagesUpdated){
-            self::updateLanguagesList();
-            self::$languagesUpdated = true;
-        }
-        // проверка на существование строки как аббревиатуры или полного имени
-        $validAbbr = self::isValidAbbr($abbrOrFull);
-        $validFull = self::isValidFullname($abbrOrFull);
-        // если не найдено, но возвращаем null
-        if (!$validAbbr && !$validFull){
-            return null;
-        }else{
-            // действуем в зависимости от того, что было передано в конструктор
-            if ($validAbbr){
-                $this->abbr     = $abbrOrFull;
-                $this->fullname = self::findFullnameByAbbr($abbrOrFull);
-            }
-            if ($validFull){
-                $this->fullname = $abbrOrFull;
-                $this->abbr     = self::findAbbrByFullname($abbrOrFull);
-            }
-        }
-    }
-
-    /** возвращает аббревиатуру языка
-     * 
-     * @return type
-     */
-    public function getAbbr()
-    {
-        return $this->abbr;
-    }
-
-    /** возвращает полное имя языка
-     * 
-     * @return type
-     */
-    public function getFullname()
-    {
-        return $this->fullname;
+        $this->fullName              = $langArray['fullName'];
+        $this->abbreviation          = $langArray['abbreviation'];
+        $this->usedInLocalization    = $langArray['usedInLocalization'];
+        $this->usedInURI             = $langArray['usedInURI'];
+        $this->websiteNativeLanguage = $langArray['websiteNative'];
     }
     
-    /** Возвращает язык по умолчанию
-     * 
-     * @return Language
+    /** Возвращает массив языков, определенных для локализации
+     * @return array 
      */
-    public static function getDefault(){
-        return self::getInstance('en');
+    public function getLocalizationLanguages()
+    {
+        $filterRules = ['usedInLocalization' => true];
+        return self::simpleSearchInstancesByFilter($filterRules);
+    }
+    
+    /** Возвращает родной язык вебсайта
+     * @return Language
+     * @throws DBDataException если определено количество языков, отличное от одного
+     */
+    public function getWebsiteNativeLanguage(){
+        $filterRules = ['websiteNativeLanguage' => true];
+        $array = self::simpleSearchInstancesByFilter($filterRules);
+        if (is_array($array)){
+            if (count($array) === 1){
+                return $array[0];
+            }else{
+                throw new DBDataException("Too much native languages!!!", 9001002);
+            }
+        }else{
+            throw new DBDataException("No native languages!!!", 9001003);
+        }
     }
 }
