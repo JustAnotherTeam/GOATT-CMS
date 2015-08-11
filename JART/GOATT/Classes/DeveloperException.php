@@ -13,4 +13,5 @@ namespace JART\GOATT\Classes;
  */
 class DeveloperException extends Exception
 {
+    protected $code = '';
 }

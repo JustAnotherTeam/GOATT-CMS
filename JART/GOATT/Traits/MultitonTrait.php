@@ -5,7 +5,7 @@ namespace JART\GOATT\Traits;
 /**
  *  Трейт мультитон. Хранит экземпляры класса в единственном числе для каждого ID.
  */
-trait Multiton
+trait MultitonTrait
 {
 
     /** @var array список экземпляров */
@@ -13,24 +13,24 @@ trait Multiton
 
     /** Возвращает экземпляр класса по id экземпляра
      * 
-     * @param mixed $id любой тип, подходящий для создания ключа в ассоциативном массиве
+     * @param mixed $key любой тип, подходящий для создания ключа в ассоциативном массиве
      * @return object экземпляр класса
      */
-    public static function getInstance($id)
+    public static function getInstance($key)
     {
-        if (!isset(self::$instances[$id])){
-            self::$instances[$id] = new self($id);
+        if (!isset(self::$instances[$key])){
+            self::$instances[$key] = new self($key);
         }
-        return self::$instances[$id];
+        return self::$instances[$key];
     }
 
     /** Уничтожает экземпляр
      * 
-     * @param mixed $id любой тип, подходящий для создания ключа в ассоциативном массиве
+     * @param mixed $key любой тип, подходящий для создания ключа в ассоциативном массиве
      */
-    public static function removeInstance($id)
+    public static function removeInstance($key)
     {
-        unset(self::$instances[$id]);
+        unset(self::$instances[$key]);
     }
 
     /**
@@ -40,6 +40,7 @@ trait Multiton
     {
         self::$instances = [];
     }
+    
     /** Возвращает массив с экземплярами объекта, имеющие свойства, соответствующие заданному фильтру
      * @param array $filterRules ассоциативный массив со значениями фильтра[propertyName => propertyValue]
      * @return array|null массив экземпляров, соответствующих фильтру

@@ -1,24 +1,35 @@
 <?php
 
+declare(strict_types = 1);
+ini_set('memory_limit', '1024M');
 /**
  * @author FiftyStars <fiftystarsdj@gmail.com>
  */
-ini_set('display_errors', 1);
+ini_set('display_errors', '1');
 session_start();
-
-use JART\GOATT as GOATT;
-
+//$_SESSION = [];
+use JART\GOATT\Core as Core;
+use JART\GOATT\Classes as Classes;
+//var_dump(debug_backtrace());
 // подключение ядра
 require_once 'JART/GOATT/Core/Core.php';
+new Core\Core();
+Classes\LogDebug::enableLog();
+Classes\LogDebug::addMessage('IMMA DEBUG MESSAGE');
 
-new GOATT\Core\Core();
-// перехват критических исключений или исключений с переадресацией
-try{
-    GOATT\Classes\CustomPDO::setConnectionParameters('mysql:dbname=main_database;host=localhost', 'root', 'testPass');
+$log = new Classes\LogSimple('someLog');
+$log->addMessage('some');
+echo '<pre>';
+var_export(Classes\LogDebug::getAllMessages());
+echo '</pre>';
+try {
     
-    GOATT\Classes\DatabaseQueryLibrary::setDatabase(GOATT\Classes\CustomPDO::getInstance());
-    
-    GOATT\Classes\Router::start();
-}catch (Exception $exception){
+} catch (Exception $exception) {
     GOATT\Classes\ExceptionHandler::handleException($exception);
+}
+
+function &getTestData($key)
+{
+    $data = [['master_id' => 50,'name' => 'Name1', 'description' => 'Desc1'], ['master_id' => 100,'name' => 'Name2', 'description' => 'Desc2']];
+    return $data;
 }

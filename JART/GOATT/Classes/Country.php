@@ -1,5 +1,6 @@
 <?php
-namespace JART\GOATT\Traits;
+
+namespace JART\GOATT\Classes;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -8,12 +9,10 @@ namespace JART\GOATT\Traits;
  */
 
 /**
- * Трейт для поиска экземпляров по значению свойств
+ * Description of Country
  *
  * @author fiftystars
  */
-trait InstanceSearch
+class Country extends CachedDataClass
 {
-    
-    
 }

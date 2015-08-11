@@ -11,11 +11,13 @@ namespace JART\GOATT\Classes;
 abstract class Language
 {
 
-    use \JART\GOATT\Traits\Multiton,
+    use \JART\GOATT\Traits\MultitonTrait,
         \JART\GOATT\Traits\VersionTrait,
         \JART\GOATT\Traits\DependencyTrait,
         \JART\GOATT\Traits\SessionCacheTrait;
 
+    /** @var string|int идентификатор языка в БД */
+    private $DBID = null;
     /** @var string аббревиатура языка */
     private $abbreviation                      = null;
     /** @var string полное имя языка */
@@ -80,5 +82,13 @@ abstract class Language
         }else{
             throw new DBDataException("No native languages!!!", 9001003);
         }
+    }
+    
+    /** Возвращает ссылку на ИД языка в БД
+     * 
+     * @return string|int|null ИД языка в БД
+     */
+    public function &getDBID(){
+        return $this->DBID;
     }
 }

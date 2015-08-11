@@ -5,7 +5,7 @@ namespace JART\GOATT\Traits;
  *
  * @author fiftystars
  */
-trait Singleton
+trait SingletonTrait
 {
     /** @var object|null экземпляр класса */
     private static $instance = null;
@@ -22,7 +22,7 @@ trait Singleton
     }
     
     /** Уничтожает экземпляр класса */
-    public static function removeSingleton(){
+    public static function removeInstance(){
         self::$instance = null;
     }
 }

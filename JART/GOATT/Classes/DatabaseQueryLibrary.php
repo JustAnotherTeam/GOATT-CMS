@@ -91,5 +91,15 @@ class DatabaseQueryLibrary
             return (array)$stmt->fetchAll();
         }
     }
-
+    
+    public static function getUserPropertiesByIdList(array $idList){
+        $result = [];
+        return $result;
+    }
+    
+    public static function uploadLanguages($filename){
+        $fp = fope($filename, 'r');
+        
+    
+    }
 }

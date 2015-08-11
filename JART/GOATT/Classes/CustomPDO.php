@@ -12,7 +12,7 @@ class CustomPDO extends \PDO
 
     use \JART\GOATT\Traits\VersionTrait,
         \JART\GOATT\Traits\DependencyTrait, 
-        \JART\GOATT\Traits\Singleton;
+        \JART\GOATT\Traits\SingletonTrait;
 
     CONST VERSION = '1.0';
     
@@ -33,11 +33,12 @@ class CustomPDO extends \PDO
             parent::__construct(self::$dsn, self::$username, self::$password,
                 self::$options);
             // установка тихого режима
-            $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+            //$this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
             // установка экземпляра
             self::$instance = $this;
         }catch (\PDOException $e){
             // TODO exception?
+            echo 'EXCEPTION';
         }
     }
 

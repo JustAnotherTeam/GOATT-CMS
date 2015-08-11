@@ -3,146 +3,126 @@
 namespace JART\GOATT\Classes;
 
 /**
- * Класс позволяет сохранять данные в кэш сериализацией и записью в $_SESSION
- *
+ * 
  * @author fiftystars
  */
 class SessionCache
 {
-    /** @var string ветка в $_SESSION[] в которой хранится кэш*/
-    CONST CACHE_BRANCH           = 'Session Cache';
-    /** @var string ветка в $_SESSION[CACHE_BRANCH] в которой хранятся данные классов*/
-    CONST CLASS_BRANCH           = 'Classes';
-    /** @var string ветка в $_SESSION[CACHE_BRANCH][CLASS_BRANCH][className] в которой хранятся сохраненные экземпляры(экземпляры доступны по заданным вручную $id) данного класса*/
-    CONST INSTANCES_BRANCH       = 'Instances';
-    /** @var string ветка в $_SESSION[CACHE_BRANCH][CLASS_BRANCH][className] в которой хранятся сохраненные значения статических переменных*/
-    CONST STATIC_BRANCH          = 'Static';
-    /** @var string ветка в $_SESSION[CACHE_BRANCH][CLASS_BRANCH][className][STATIC_BRANCH] в которой хранятся сохраненные значения статических переменных*/
-    CONST PROPERTY_NAME_BRANCH   = 'Property';
-    /** @var string ветка в $_SESSION[] в которой хранится кэш*/
-    CONST PROPERTY_VALUE_BRANCH  = 'Value';
-    /** @var string ветка в $_SESSION[] в которой хранится кэш*/
-    CONST PROPERTY_SETTER_BRANCH = 'Setter';
-    /** @var string ветка в $_SESSION[] в которой хранится кэш*/
-    CONST LOGS_BRANCH            = 'Logs';
-    
-    CONST BRANCH_DELIMITER = '\\\\';
 
-    /** Сохраняет объект в кэш
+    const SECTION_CACHE     = 'cache';
+    const SECTION_CLASSES   = 'classes';
+    const SECTION_INSTANCES = 'instances';
+    const SECTION_STATIC    = 'static';
+
+    private static $ownerClassName = null;
+    protected $cache               = null;
+
+    /**
      * 
-     * @param mixed $object кэшируемое значение
-     * @param mixed $id идентификатор объекта для загрузки из кэша
+     * @param mixed $instanceKey опционально. Ключ экземпляра 
      */
-    public static function saveObjectToSessionCache($object, $id)
+    protected static function initializeCache($instanceKey = null)
     {
-        $className = get_class($object);
-        self::
-        $_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::INSTANCES_BRANCH][$id] = serialize($object);
+        // инициализация ветки кэша
+        if (!isset($_SESSION[self::SECTION_CACHE]) || !is_array($_SESSION[self::SECTION_CACHE])) {
+            $_SESSION[self::SECTION_CACHE] = [];
+        }
+        // инициализация ветки списка классов
+        $cache = &$_SESSION[self::SECTION_CACHE];
+        if (!isset($cache[self::SECTION_CLASSES]) || !is_array($cache[self::SECTION_CLASSES])) {
+            $cache[self::SECTION_CLASSES] = [];
+        }
+        // инициализация ветки конкретного класса
+        $classes = &$cache[self::SECTION_CLASSES];
+        if (!isset($classes[self::$ownerClassName]) || !is_array($classes[self::$ownerClassName])) {
+            $classes[self::$ownerClassName] = [];
+        }
+        // инициализация ветки данных, относящихся к классу в целом
+        $curClass = &$classes[self::$ownerClassName];
+        if (!isset($curClass[self::SECTION_STATIC]) || !is_array($curClass[self::SECTION_STATIC])) {
+            $curClass[self::SECTION_STATIC] = [];
+        }
+        // инициализация ветки списка экземпляров класса
+        if (!isset($curClass[self::SECTION_INSTANCES]) || !is_array($curClass[self::SECTION_INSTANCES])) {
+            $curClass[self::SECTION_INSTANCES] = [];
+        }
+        // если ключ экземпляра указан, то инициализация ветки данных, относящихся к конкретному экземпляру
+        if (!($instanceKey === null)) {
+            $instances = &$curClass[self::SECTION_INSTANCES];
+            if (!isset($instances[$instanceKey]) || !is_array($instances[$instanceKey])) {
+                $instances[$instanceKey] = [];
+            }
+        }
     }
 
-    /** Возвращает объект из кэша
-     * 
-     * @param string $className имя класса
-     * @param mixed $id любой тип, который может быть использован как ключ в ассоциативном массиве
-     * @param bool $consume удалить после получения?
-     * @return mixed объект
-     */
-    public static function loadObjectFromSessionCache($className, $id, $consume = true)
+    public function __construct($className, $instanceKey = null)
     {
-        if (isset($_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::INSTANCES_BRANCH][$id])){
-            $result = unserialize($_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::INSTANCES_BRANCH][$id]);
-            if ($consume){
-                unset($_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::INSTANCES_BRANCH][$id]);
-            }
-        }else{
+        self::$ownerClassName = $className;
+        static::initializeCache($instanceKey);
+        if ($instanceKey === null) {
+            $this->cache = &$_SESSION[self::SECTION_CACHE][self::SECTION_CLASSES][$className][self::SECTION_STATIC];
+        } else {
+            $this->cache = &$_SESSION[self::SECTION_CACHE][self::SECTION_CLASSES][$className][self::SECTION_INSTANCES][$instanceKey];
+        }
+    }
+
+    public function setItem($key, $data)
+    {
+        $this->cache[$key] = $data;
+    }
+
+    public function bindItem($key, &$data)
+    {
+        $this->cache[$key] = $data;
+    }
+
+    public function removeItem($key)
+    {
+        unset($this->cache[$key]);
+    }
+
+    public function pushItem($data)
+    {
+        $this->cache[] = $data;
+    }
+
+    public function itemExists($key)
+    {
+        if (isset($this->cache[$key])) {
+            $result = true;
+        } else {
+            $result = false;
+        }
+        return $result;
+    }
+
+    public function getItem($key)
+    {
+        if (isset($this->cache[$key])) {
+            $result = $this->cache[$key];
+        } else {
             $result = null;
         }
         return $result;
     }
 
-    /** Возвращает объект из кэша
-     * 
-     * @param string $className имя класса
-     * @param mixed $id любой тип, который может быть использован как ключ в ассоциативном массиве
-     * @param bool $consume удалить после получения?
-     * @return mixed объект
-     */
-    public static function loadAllFromSessionCache($className, $consume = true)
+    public function &getItemRef($key)
     {
-        if (isset($_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::INSTANCES_BRANCH])){
-            foreach ($_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::INSTANCES_BRANCH] as &$value){
-                $result[] = unserialize($value);
-                if ($consume){
-                    unset($value);
-                }
-            }
-        }else{
+        if (isset($this->cache[$key])) {
+            $result = $this->cache[$key];
+        } else {
             $result = null;
         }
         return $result;
     }
 
+    public function getAllItems()
+    {
+        return $this->cache;
+    }
 
-    /** Возвращает ветку кэша в виде ссылки на массив данной ветки в $_SESSION[]
-     * 
-     * @param string $path
-     * @return array ссылка на ветку суперглобального SESSION
-     */
-    public static function &getBranchRefByPath($path){
-        $pathAsArray = explode(self::BRANCH_DELIMITER, $path);
-        $branch = &$_SESSION[self::CACHE_BRANCH];
-        foreach ($pathAsArray as $pathItem){
-            if (!isset($branch[$pathItem])){
-                $branch[$pathItem] = [];
-            }
-            $branch = &$branch[$pathItem];
-        }
-        return $branch;
-    }
-    
-    public static function saveStaticPropertiesIntoCache($class, $propertiesToExclude = [])
+    public function &getAllItemsRef()
     {
-        $reflection = new \ReflectionClass($class);
-        $className = $reflection->getName();
-        $staticProperties = $reflection->getStaticProperties();
-        // Сброс статической ветки кэша этого класса
-        if (isset($_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::STATIC_BRANCH])){
-            unset($_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::STATIC_BRANCH]);
-        }
-        // Запись свойств
-        foreach ($staticProperties as $staticProperty){
-            // Проверка списка исключаемых свойств
-            if (!array_search($propertiesToExclude, $staticProperty)){
-                $_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::STATIC_BRANCH][$staticProperty] 
-                    = $reflection->getStaticPropertyValue($staticProperty);
-            }
-        }
-    }
-    
-    /** 
-     * @param string|object $class имя класса или объект
-     * @throws DeveloperException
-     */
-    public static function loadStaticPropertiesFromCache($class, $clearCache = false)
-    {
-        $reflection = new \ReflectionClass($class);
-        $className = $reflection->getName();
-        // Исключение если класс не имеет метода setStaticProperty для установки статических свойств
-        if (!method_exists($class, 'setStaticProperty')){
-            throw new DeveloperException('Class ' . $className . ' requires trait SessionCacheTrait to set static properties', 9001004);
-        }
-        if (!isset($_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::STATIC_BRANCH])){
-            return false;
-        }
-        // перебор всех кэшированных данных
-        foreach ($_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::STATIC_BRANCH] as $staticPropertyName => $staticPropertyValue){
-            // вызов метода трейта для установки статических свойств
-            $className::setStaticProperty($staticPropertyName, $staticPropertyValue);
-        }
-        // Очистка ветки, если $clearCache == true
-        if ($clearCache){
-            unset($_SESSION[self::CACHE_BRANCH][self::CLASS_BRANCH][$className][self::STATIC_BRANCH]);
-        }
-        return true;
+        return $this->cache;
     }
 }
