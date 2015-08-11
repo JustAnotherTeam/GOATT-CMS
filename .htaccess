@@ -16,6 +16,6 @@ RewriteCond %{THE_REQUEST} !SMARTJS [NC]
 
 RewriteCond %{THE_REQUEST} !favicon.ico [NC]
 RewriteCond %{THE_REQUEST} !phpdoc[.]* [NC]
-
+RewriteCond %{THE_REQUEST} ![.]*.csv [NC]
 # Перенаправляем на индекс
 RewriteRule .* index.php [L]
